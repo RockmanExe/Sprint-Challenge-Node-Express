@@ -66,6 +66,22 @@ server.post('/projects', (req, res)=> {
     })
 });
 
+server.delete('/projects/:id', (req, res) => {
+    const { id } = req.params;
+      projects.remove(id)
+      .then(response => {
+        if (response === 0) {
+          sendUserError(404, 'The project with that ID does not exist."', res);
+          return;
+        }
+        res.json({ success: `Project with id: ${id} removed from system` });
+      })
+      .catch(error => {
+        sendUserError(500, 'The project could not be removed', res);
+        return;
+      });
+  });
+
 /////////////////// Actions ///////////////////
 
 server.get('/actions', (req, res)=> {
@@ -95,7 +111,7 @@ server.get('/actions/:id', (req, res)=> {
 
 server.post('/actions', (req, res)=> {
     const{ project_id, description, notes}= req.body;
-    if (!project_id|| !description||notes){
+    if (!project_id || !description || !notes){
         res.status(400).json({errorMessage: 'Please provide a projectId, description and some notes'})
         return;
     }
